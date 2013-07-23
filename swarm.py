@@ -4,7 +4,6 @@ import random
 from math import sqrt
 from itertools import imap
 from operator import add, sub
-from time import sleep
 
 # number of swarms
 SN = 100
@@ -60,6 +59,5 @@ if __name__ == '__main__':
     print '\n'.join(map(str, world))+'\ndone'
     for i in range(1000):
         genNext(world)
-        sleep(0.15)
         print '\n'.join(map(str, world))+'\ndone'
-       
+
