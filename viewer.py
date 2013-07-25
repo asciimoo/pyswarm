@@ -2,7 +2,8 @@ import sys, os, os.path, soya, soya.cube
 from time import sleep
 
 PAUSE = False
-STOP = False
+STOP  = False
+FPS   = 10
 
 class MovableCamera(soya.Camera):
     def __init__(self, parent):
@@ -13,7 +14,7 @@ class MovableCamera(soya.Camera):
         self.rotation_x_speed = 0.0
 
     def begin_round(self):
-        global PAUSE, STOP
+        global PAUSE, STOP, FPS
         soya.Camera.begin_round(self)
 
         for event in soya.process_event():
@@ -25,6 +26,8 @@ class MovableCamera(soya.Camera):
                 elif event[1] == soya.sdlconst.K_q:      STOP = True
                 elif event[1] == soya.sdlconst.K_ESCAPE: STOP = True
                 elif event[1] == soya.sdlconst.K_SPACE : PAUSE = not PAUSE
+                elif event[1] == soya.sdlconst.K_PLUS  : FPS += 1
+                elif event[1] == soya.sdlconst.K_MINUS : FPS -= 1
             if event[0] == soya.sdlconst.KEYUP:
                 if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
                 elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
@@ -54,7 +57,7 @@ soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 scene = soya.World()
 
 light = soya.Light(scene)
-light.set_xyz(0.0, 0.2, 1.0)
+light.set_xyz(10.0, 10.2, 11.0)
 
 camera = MovableCamera(scene)
 camera.set_xyz(-10.0, 4.0, 10.0)
@@ -64,7 +67,7 @@ soya.set_root_widget(camera)
 
 swarms = read_swarms()
 
-cube = soya.cube.Cube(None, size=0.1).shapify()
+cube = soya.cube.Cube(None, size=0.08).shapify()
 cubes = []
 for i,swarm in enumerate(swarms):
     cubes.append(soya.Body(scene,cube))
@@ -96,5 +99,5 @@ while not STOP:
         swarms = read_swarms()
         for i,swarm in enumerate(swarms):
             cubes[i].set_xyz(*swarms[i])
-    sleep(1/10.)
+        sleep(1/float(FPS))
     ml.update()
