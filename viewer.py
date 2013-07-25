@@ -91,9 +91,6 @@ class MainLoop(soya.MainLoop):
 
 
 ml = MainLoop(scene)
-
-print dir(soya.MAIN_LOOP)
-
 while not STOP:
     if not PAUSE:
         swarms = read_swarms()
