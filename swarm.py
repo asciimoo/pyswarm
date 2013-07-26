@@ -6,12 +6,14 @@ from math import sqrt
 class Agent:
     count = 0
 
-    def __init__(self, name='Bond', resolution=1, x=None, y=None, z=None):
+    def __init__(self, name='Bond', resolution=1, x=None, y=None, z=None, **kwargs):
         self.name  = '{:s}_{:0>4d}'.format(name, Agent.count)
         self.x     = (random.random()-0.5)*pow(10, resolution)*2 if x == None else x
         self.y     = (random.random()-0.5)*pow(10, resolution)*2 if y == None else y
         self.z     = (random.random()-0.5)*pow(10, resolution)*2 if z == None else z
         Agent.count += 1
+        if hasattr(self, 'init'):
+            self.init(**kwargs)
 
     def __str__(self): return '{:s} {:.8f} {:.8f} {:.8f}'.format(self.name, self.x, self.y, self.z)
 
@@ -20,6 +22,16 @@ class Agent:
 
     def distance(self, bgent):
         return sqrt(pow(self.x-bgent.x, 2)+pow(self.y-bgent.y, 2)+pow(self.z-bgent.z, 2))
+
+    def vector_to(self, bgent, d=-1):
+        d = float(d)
+        return [(self.x-bgent.x)/d, (self.y-bgent.y)/d, (self.z-bgent.z)/d]
+
+    def move(self, x, y, z):
+        self.x += x
+        self.y += y
+        self.z += z
+        return self
 
 class World:
 
