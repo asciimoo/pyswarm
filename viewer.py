@@ -10,8 +10,9 @@ class MovableCamera(soya.Camera):
         soya.Camera.__init__(self, parent)
 
         self.speed = soya.Vector(self)
-        self.rotation_y_speed = 0.0
         self.rotation_x_speed = 0.0
+        self.rotation_y_speed = 0.0
+        self.rotation_z_speed = 0.0
 
     def begin_round(self):
         global PAUSE, STOP, FPS
@@ -19,20 +20,25 @@ class MovableCamera(soya.Camera):
 
         for event in soya.process_event():
             if event[0] == soya.sdlconst.KEYDOWN:
-                if   event[1] == soya.sdlconst.K_UP:     self.speed.z = -0.1
-                elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z =  0.1
-                elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed =  1.0
-                elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = -1.0
-                elif event[1] == soya.sdlconst.K_q:      STOP = True
+                if   event[1] == soya.sdlconst.K_w     : self.speed.z = -0.1
+                elif event[1] == soya.sdlconst.K_s     : self.speed.z =  0.1
+                elif event[1] == soya.sdlconst.K_e     : self.rotation_x_speed =  1.0
+                elif event[1] == soya.sdlconst.K_q     : self.rotation_x_speed = -1.0
+                elif event[1] == soya.sdlconst.K_a     : self.rotation_y_speed =  1.0
+                elif event[1] == soya.sdlconst.K_d     : self.rotation_y_speed = -1.0
+                elif event[1] == soya.sdlconst.K_q     : STOP = True
                 elif event[1] == soya.sdlconst.K_ESCAPE: STOP = True
                 elif event[1] == soya.sdlconst.K_SPACE : PAUSE = not PAUSE
                 elif event[1] == soya.sdlconst.K_PLUS  : FPS += 1
                 elif event[1] == soya.sdlconst.K_MINUS : FPS -= 1
+                else: print event[1]
             if event[0] == soya.sdlconst.KEYUP:
-                if   event[1] == soya.sdlconst.K_UP:     self.speed.z = 0.0
-                elif event[1] == soya.sdlconst.K_DOWN:   self.speed.z = 0.0
-                elif event[1] == soya.sdlconst.K_LEFT:   self.rotation_y_speed = 0.0
-                elif event[1] == soya.sdlconst.K_RIGHT:  self.rotation_y_speed = 0.0
+                if   event[1] == soya.sdlconst.K_w  : self.speed.z = 0.0
+                elif event[1] == soya.sdlconst.K_s  : self.speed.z = 0.0
+                elif event[1] == soya.sdlconst.K_e  : self.rotation_x_speed = 0.0
+                elif event[1] == soya.sdlconst.K_q  : self.rotation_x_speed = 0.0
+                elif event[1] == soya.sdlconst.K_a  : self.rotation_y_speed = 0.0
+                elif event[1] == soya.sdlconst.K_d  : self.rotation_y_speed = 0.0
 
     def advance_time(self, proportion):
         self.add_mul_vector(proportion, self.speed)
@@ -40,12 +46,14 @@ class MovableCamera(soya.Camera):
         self.turn_x(self.rotation_x_speed * proportion)
 
 def read_swarms():
-    swarms = []
+    global sys
+    swarms = {}
     while True:
-        s = raw_input().strip()
+        s = sys.stdin.readline().strip()
         if s == 'done':
             break
-        swarms.append(map(float, s.split()))
+        s = s.split()
+        swarms[s[0]] = map(float, s[1:])
     return swarms
 
 
@@ -64,37 +72,26 @@ camera.set_xyz(-10.0, 4.0, 10.0)
 camera.fov = 140.0
 soya.set_root_widget(camera)
 
+cube = soya.cube.Cube(None, size=0.08).shapify()
 
 swarms = read_swarms()
 
-cube = soya.cube.Cube(None, size=0.08).shapify()
-cubes = []
-for i,swarm in enumerate(swarms):
-    cubes.append(soya.Body(scene,cube))
+cubes = {}
+for i,swarm in swarms.items():
+    cubes[i] = soya.Body(scene,cube)
     cubes[i].set_xyz(*swarms[i])
-
-
-
-# Creates the ray.
-
 
 
 # Main loop
 class MainLoop(soya.MainLoop):
     def begin_round(self):
-        #swarms = read_swarms()
-        #print 'asdf'
-        #for i,swarm in enumerate(swarms):
-        #    cubes[i].set_xyz(*swarms[i])
         soya.MainLoop.begin_round(self)
-
-
 
 ml = MainLoop(scene)
 while not STOP:
     if not PAUSE:
         swarms = read_swarms()
-        for i,swarm in enumerate(swarms):
+        for i,swarm in swarms.items():
             cubes[i].set_xyz(*swarms[i])
         sleep(1/float(FPS))
     ml.update()
