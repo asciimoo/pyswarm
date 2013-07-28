@@ -6,7 +6,7 @@ from math import sqrt
 class Agent:
     count = 0
 
-    def __init__(self, name='Bond', resolution=1, x=None, y=None, z=None, color="FF00FFFF", **kwargs):
+    def __init__(self, name='Bond', resolution=1, x=None, y=None, z=None, color="FFFFFFFF", **kwargs):
         self.name  = '{:s}_{:0>4d}'.format(name, Agent.count)
         self.color = color
         self.x     = (random.random()-0.5)*pow(10, resolution)*2 if x == None else x
@@ -40,7 +40,6 @@ class World:
         self.agents = []
 
     def add(self, *args):
-        print map(type, args)
         self.agents.extend(args)
 
     def genNext(self):
