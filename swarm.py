@@ -40,11 +40,16 @@ class World:
         self.agents = []
 
     def add(self, *args):
+        print map(type, args)
         self.agents.extend(args)
 
     def genNext(self):
         for agent in self.agents:
             agent.act()
+        return self
+
+    def __repr__(self):
+        return '\n'.join(map(str, self.agents))+'\ndone'
 
 
 def gravity(d):
@@ -59,8 +64,7 @@ def moving(a, b, d):
 if __name__ == '__main__':
     world = World()
     [world.add(Agent()) for x in range(100)]
-    print '\n'.join(map(str, world.agents))+'\ndone'
+    print world
     for i in range(1000):
-        world.genNext()
-        print '\n'.join(map(str, world.agents))+'\ndone'
+        print world.genNext()
 
