@@ -12,6 +12,7 @@ class Agent:
         self.x     = (random.random()-0.5)*pow(10, resolution)*2 if x == None else x
         self.y     = (random.random()-0.5)*pow(10, resolution)*2 if y == None else y
         self.z     = (random.random()-0.5)*pow(10, resolution)*2 if z == None else z
+        self.type  = self.__class__.__name__
         Agent.count += 1
         if hasattr(self, 'init'):
             self.init(**kwargs)
