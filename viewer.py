@@ -53,7 +53,7 @@ def read_swarms():
         if s == 'done':
             break
         s = s.split()
-        swarms[s[0]] = map(float, s[1:])
+        swarms[s[0]] = {'coords': map(float, s[1:4]), 'color': s[4]}
     return swarms
 
 
@@ -67,31 +67,30 @@ scene = soya.World()
 light = soya.Light(scene)
 light.set_xyz(10.0, 10.2, 11.0)
 
+#scene.atmosphere = soya.Atmosphere()
+#scene.atmosphere.ambient = (0.0, 1.0, 1.0, 1.0)
+
 camera = MovableCamera(scene)
 camera.set_xyz(-10.0, 4.0, 10.0)
 camera.fov = 140.0
 soya.set_root_widget(camera)
-
-cube = soya.cube.Cube(None, size=0.08).shapify()
-
-swarms = read_swarms()
-
-cubes = {}
-for i,swarm in swarms.items():
-    cubes[i] = soya.Body(scene,cube)
-    cubes[i].set_xyz(*swarms[i])
-
 
 # Main loop
 class MainLoop(soya.MainLoop):
     def begin_round(self):
         soya.MainLoop.begin_round(self)
 
+cubes = {}
 ml = MainLoop(scene)
 while not STOP:
     if not PAUSE:
         swarms = read_swarms()
-        for i,swarm in swarms.items():
-            cubes[i].set_xyz(*swarms[i])
+        for name,swarm in swarms.items():
+            if not name in cubes.keys():
+                color = soya.Material()
+                color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
+                cube = soya.cube.Cube(None, color, size=0.08).shapify()
+                cubes[name] = soya.Body(scene,cube)
+            cubes[name].set_xyz(*swarms[name]['coords'])
         sleep(1/float(FPS))
     ml.update()

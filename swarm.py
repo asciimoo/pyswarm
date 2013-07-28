@@ -6,8 +6,9 @@ from math import sqrt
 class Agent:
     count = 0
 
-    def __init__(self, name='Bond', resolution=1, x=None, y=None, z=None, **kwargs):
+    def __init__(self, name='Bond', resolution=1, x=None, y=None, z=None, color="FF00FFFF", **kwargs):
         self.name  = '{:s}_{:0>4d}'.format(name, Agent.count)
+        self.color = color
         self.x     = (random.random()-0.5)*pow(10, resolution)*2 if x == None else x
         self.y     = (random.random()-0.5)*pow(10, resolution)*2 if y == None else y
         self.z     = (random.random()-0.5)*pow(10, resolution)*2 if z == None else z
@@ -15,7 +16,7 @@ class Agent:
         if hasattr(self, 'init'):
             self.init(**kwargs)
 
-    def __str__(self): return '{:s} {:.8f} {:.8f} {:.8f}'.format(self.name, self.x, self.y, self.z)
+    def __str__(self): return '{:s} {:.8f} {:.8f} {:.8f} {:s}'.format(self.name, self.x, self.y, self.z, self.color)
 
     def act(self):
         pass
