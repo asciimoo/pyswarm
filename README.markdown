@@ -3,9 +3,14 @@ PySwarm
 
 A lightweight and simple swarm builder/visualizer
 
+`swarms/` directory contains some example swarms
+
 
 ### Dependencies
- * soya3d (http://home.gna.org/oomadness/en/soya3d/index.html) (viewer)
+
+viewer:
+
+ * soya3d (http://home.gna.org/oomadness/en/soya3d/index.html)
 
 
 ### Usage
