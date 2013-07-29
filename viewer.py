@@ -6,13 +6,14 @@ STOP  = False
 FPS   = 10.0
 
 class MovableCamera(soya.Camera):
-    def __init__(self, parent):
+    def __init__(self, parent, light):
         soya.Camera.__init__(self, parent)
 
         self.speed = soya.Vector(self)
         self.rotation_x_speed = 0.0
         self.rotation_y_speed = 0.0
         self.rotation_z_speed = 0.0
+        self.light = light
 
     def begin_round(self):
         global PAUSE, STOP, FPS
@@ -44,6 +45,7 @@ class MovableCamera(soya.Camera):
         self.add_mul_vector(proportion, self.speed)
         self.turn_y(self.rotation_y_speed * proportion)
         self.turn_x(self.rotation_x_speed * proportion)
+        self.light.set_xyz(self.x, self.y, self.z)
 
 
 class SwarmEntity(soya.Body):
@@ -158,7 +160,7 @@ if __name__ == '__main__':
     #scene.atmosphere = soya.Atmosphere()
     #scene.atmosphere.ambient = (0.0, 1.0, 1.0, 1.0)
 
-    camera = MovableCamera(scene)
+    camera = MovableCamera(scene, light)
     camera.set_xyz(-10.0, 4.0, 10.0)
     camera.fov = 140.0
     soya.set_root_widget(camera)
