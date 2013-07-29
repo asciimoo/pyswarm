@@ -96,7 +96,7 @@ def argparser():
     from sys import stdin
     argp = argparse.ArgumentParser(description='PyswarmViewer')
     argp.add_argument('-i', '--input'
-                     ,help      = 'Output file - default is STDIN'
+                     ,help      = 'Input file - default is STDIN'
                      ,metavar   = 'FILE'
                      ,default   = stdin
                      ,type      = argparse.FileType('r')
