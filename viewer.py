@@ -45,6 +45,17 @@ class MovableCamera(soya.Camera):
         self.turn_y(self.rotation_y_speed * proportion)
         self.turn_x(self.rotation_x_speed * proportion)
 
+
+class SwarmEntity(soya.Body):
+    def __init__(self, scene, model):
+        soya.Body.__init__(self, scene, model)
+        self.speed = soya.Vector(self, 0.0, 0.0, 0.0)
+
+    def advance_time(self, prop):
+        soya.Body.advance_time(self, prop)
+        self.add_mul_vector(prop, self.speed)
+
+
 def read_swarms():
     global sys
     swarms = {}
@@ -73,25 +84,20 @@ def argparser():
                      ,type      = float
                      ,metavar   = 'N'
                      )
+    argp.add_argument('-F', '--full-screen'
+                     ,action    = 'store_true'
+                     ,help      = 'Fullscreen mode'
+                     ,default   = False
+                     )
+    argp.add_argument('-r', '--resolution'
+                     ,help      = 'Resolution - default 800x600'
+                     ,default   = '800x600'
+                     ,action    = 'store'
+                     ,type      = str
+                     ,metavar   = 'WIDTHxHEIGHT'
+                     )
     return vars(argp.parse_args())
 
-soya.init()
-soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
-
-# Creates the scene.
-
-scene = soya.World()
-
-light = soya.Light(scene)
-light.set_xyz(10.0, 10.2, 11.0)
-
-#scene.atmosphere = soya.Atmosphere()
-#scene.atmosphere.ambient = (0.0, 1.0, 1.0, 1.0)
-
-camera = MovableCamera(scene)
-camera.set_xyz(-10.0, 4.0, 10.0)
-camera.fov = 140.0
-soya.set_root_widget(camera)
 
 # Main loop
 class MainLoop(soya.MainLoop):
@@ -99,10 +105,27 @@ class MainLoop(soya.MainLoop):
         soya.MainLoop.begin_round(self)
 
 
-
 if __name__ == '__main__':
     args = argparser()
+    args['resolution'] = map(int, args['resolution'].split('x'))
     FPS = args['fps']
+    soya.init(title='SwarmViewer', fullscreen=args['full_screen'], width=args['resolution'][0], height=args['resolution'][1])
+    soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
+
+    # Creates the scene.
+
+    scene = soya.World()
+
+    light = soya.Light(scene)
+    light.set_xyz(10.0, 10.2, 11.0)
+
+    #scene.atmosphere = soya.Atmosphere()
+    #scene.atmosphere.ambient = (0.0, 1.0, 1.0, 1.0)
+
+    camera = MovableCamera(scene)
+    camera.set_xyz(-10.0, 4.0, 10.0)
+    camera.fov = 140.0
+    soya.set_root_widget(camera)
     cubes = {}
     ml = MainLoop(scene)
     while not STOP:
@@ -113,7 +136,7 @@ if __name__ == '__main__':
                     color = soya.Material()
                     color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
                     cube = soya.cube.Cube(None, color, size=0.08).shapify()
-                    cubes[name] = soya.Body(scene,cube)
+                    cubes[name] = SwarmEntity(scene,cube)
                 cubes[name].set_xyz(*swarms[name]['coords'])
             if FPS > 0:
                 sleep(1/FPS)
