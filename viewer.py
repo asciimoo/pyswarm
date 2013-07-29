@@ -45,6 +45,17 @@ class MovableCamera(soya.Camera):
         self.turn_y(self.rotation_y_speed * proportion)
         self.turn_x(self.rotation_x_speed * proportion)
 
+
+class SwarmEntity(soya.Body):
+    def __init__(self, scene, model):
+        soya.Body.__init__(self, scene, model)
+        self.speed = soya.Vector(self, 0.0, 0.0, 0.0)
+
+    def advance_time(self, prop):
+        soya.Body.advance_time(self, prop)
+        self.add_mul_vector(prop, self.speed)
+
+
 def read_swarms():
     global sys
     swarms = {}
@@ -57,7 +68,7 @@ def read_swarms():
     return swarms
 
 
-soya.init()
+soya.init(fullscreen=True)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
 # Creates the scene.
@@ -90,7 +101,7 @@ while not STOP:
                 color = soya.Material()
                 color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
                 cube = soya.cube.Cube(None, color, size=0.08).shapify()
-                cubes[name] = soya.Body(scene,cube)
+                cubes[name] = SwarmEntity(scene,cube)
             cubes[name].set_xyz(*swarms[name]['coords'])
         sleep(1/float(FPS))
     ml.update()
