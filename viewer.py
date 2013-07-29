@@ -66,8 +66,9 @@ class SwarmEntity(soya.Body):
 
 
 class Reader(Thread):
-    def __init__(self):
+    def __init__(self, input_file):
         Thread.__init__(self)
+        self.input_file = input_file
         self.running = False
         self.swarms = []
 
@@ -76,7 +77,7 @@ class Reader(Thread):
         while self.running:
             csw = {}
             while True:
-                s = sys.stdin.readline().strip()
+                s = self.input_file.readline().strip()
                 if s == 'done':
                     break
                 s = s.split()
@@ -98,7 +99,7 @@ def argparser():
                      ,help      = 'Output file - default is STDIN'
                      ,metavar   = 'FILE'
                      ,default   = stdin
-                     ,type      = argparse.FileType('w')
+                     ,type      = argparse.FileType('r')
                      )
     argp.add_argument('-f', '--fps'
                      ,help      = 'Reading speed - default is 10'
@@ -167,6 +168,6 @@ if __name__ == '__main__':
     camera.fov = 140.0
     soya.set_root_widget(camera)
     cubes = {}
-    reader = Reader()
+    reader = Reader(args['input'])
     reader.start()
     MainLoop(scene).main_loop()
