@@ -1,5 +1,7 @@
 import sys, os, os.path, soya, soya.cube
 from time import sleep
+from soya import opengl
+from threading import Thread
 
 PAUSE = False
 STOP  = False
@@ -49,23 +51,46 @@ class MovableCamera(soya.Camera):
 class SwarmEntity(soya.Body):
     def __init__(self, scene, model):
         soya.Body.__init__(self, scene, model)
+        self.new_pos = (0.0, 0.0, 0.0)
         self.speed = soya.Vector(self, 0.0, 0.0, 0.0)
+
+    def newpos(self, x, y, z):
+        self.new_pos = soya.Point()
+        self.new_pos.set_xyz(x, y, z)
+
+    def begin_round(self):
+        soya.Body.begin_round(self)
+        self.speed = self.vector_to(self.new_pos)
 
     def advance_time(self, prop):
         soya.Body.advance_time(self, prop)
         self.add_mul_vector(prop, self.speed)
 
 
-def read_swarms():
-    global sys
-    swarms = {}
-    while True:
-        s = sys.stdin.readline().strip()
-        if s == 'done':
-            break
-        s = s.split()
-        swarms[s[0]] = {'coords': map(float, s[1:4]), 'color': s[4]}
-    return swarms
+class Reader(Thread):
+    def __init__(self):
+        Thread.__init__(self)
+        self.running = False
+        self.swarms = []
+
+    def run(self):
+        self.running = True
+        while self.running:
+            csw = {}
+            while True:
+                s = sys.stdin.readline().strip()
+                if s == 'done':
+                    break
+                s = s.split()
+                csw[s[0]] = {'coords': map(float, s[1:4]), 'color': s[4]}
+            self.swarms.append(csw)
+
+    def get_round(self):
+        if len(self.swarms) > 0:
+            return self.swarms.pop(0)
+        else:
+            return {}
+
 
 def argparser():
     import argparse
@@ -101,8 +126,20 @@ def argparser():
 
 # Main loop
 class MainLoop(soya.MainLoop):
+    cubes = {}
     def begin_round(self):
         soya.MainLoop.begin_round(self)
+        if STOP:
+            reader.running = False
+            sys.exit()
+        if not PAUSE:
+            for name,swarm in reader.get_round().items():
+                if not name in self.cubes.keys():
+                    color = soya.Material()
+                    color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
+                    cube = soya.cube.Cube(None, color, size=0.08).shapify()
+                    self.cubes[name] = SwarmEntity(scene,cube)
+                self.cubes[name].newpos(*swarm['coords'])
 
 
 if __name__ == '__main__':
@@ -127,17 +164,6 @@ if __name__ == '__main__':
     camera.fov = 140.0
     soya.set_root_widget(camera)
     cubes = {}
-    ml = MainLoop(scene)
-    while not STOP:
-        if not PAUSE:
-            swarms = read_swarms()
-            for name,swarm in swarms.items():
-                if not name in cubes.keys():
-                    color = soya.Material()
-                    color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
-                    cube = soya.cube.Cube(None, color, size=0.08).shapify()
-                    cubes[name] = SwarmEntity(scene,cube)
-                cubes[name].set_xyz(*swarms[name]['coords'])
-            if FPS > 0:
-                sleep(1/FPS)
-        ml.update()
+    reader = Reader()
+    reader.start()
+    MainLoop(scene).main_loop()
