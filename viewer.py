@@ -20,8 +20,8 @@ class MovableCamera(soya.Camera):
 
         for event in soya.process_event():
             if event[0] == soya.sdlconst.KEYDOWN:
-                if   event[1] == soya.sdlconst.K_w     : self.speed.z = -0.1
-                elif event[1] == soya.sdlconst.K_s     : self.speed.z =  0.1
+                if   event[1] == soya.sdlconst.K_w     : self.speed.z = -0.5
+                elif event[1] == soya.sdlconst.K_s     : self.speed.z =  0.5
                 elif event[1] == soya.sdlconst.K_e     : self.rotation_x_speed =  1.0
                 elif event[1] == soya.sdlconst.K_q     : self.rotation_x_speed = -1.0
                 elif event[1] == soya.sdlconst.K_a     : self.rotation_y_speed =  1.0
@@ -131,13 +131,19 @@ class MainLoop(soya.MainLoop):
             reader.running = False
             sys.exit()
         if not PAUSE:
-            for name,swarm in reader.get_round().items():
+            swarms = reader.get_round()
+            for name,swarm in swarms.items():
                 if not name in self.cubes.keys():
                     color = soya.Material()
                     color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
                     cube = soya.cube.Cube(None, color, size=0.08).shapify()
                     self.cubes[name] = SwarmEntity(scene,cube)
                 self.cubes[name].newpos(*swarm['coords'])
+            # TODO remove cubes
+            #for cname,cube in self.cubes.items():
+            #    if not cname in swarms.keys():
+            #        s = self.cubes.pop(cname)
+            #        del(s)
 
 
 if __name__ == '__main__':
