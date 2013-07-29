@@ -26,6 +26,12 @@ class Agent:
     def distance(self, bgent):
         return sqrt(pow(self.x-bgent.x, 2)+pow(self.y-bgent.y, 2)+pow(self.z-bgent.z, 2))
 
+    def move_to(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+        return self
+
     def vector_to(self, bgent, d=-1):
         d = float(d)
         return [(self.x-bgent.x)/d, (self.y-bgent.y)/d, (self.z-bgent.z)/d]
