@@ -84,25 +84,13 @@ def argparser():
                      ,type      = float
                      ,metavar   = 'N'
                      )
+    argp.add_argument('-F', '--full-screen'
+                     ,action    = 'store_true'
+                     ,help      = 'Fullscreen mode'
+                     ,default   = False
+                     )
     return vars(argp.parse_args())
 
-soya.init(fullscreen=True)
-soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
-
-# Creates the scene.
-
-scene = soya.World()
-
-light = soya.Light(scene)
-light.set_xyz(10.0, 10.2, 11.0)
-
-#scene.atmosphere = soya.Atmosphere()
-#scene.atmosphere.ambient = (0.0, 1.0, 1.0, 1.0)
-
-camera = MovableCamera(scene)
-camera.set_xyz(-10.0, 4.0, 10.0)
-camera.fov = 140.0
-soya.set_root_widget(camera)
 
 # Main loop
 class MainLoop(soya.MainLoop):
@@ -113,6 +101,23 @@ class MainLoop(soya.MainLoop):
 if __name__ == '__main__':
     args = argparser()
     FPS = args['fps']
+    soya.init(title='SwarmViewer', fullscreen=args['full_screen'])
+    soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
+
+    # Creates the scene.
+
+    scene = soya.World()
+
+    light = soya.Light(scene)
+    light.set_xyz(10.0, 10.2, 11.0)
+
+    #scene.atmosphere = soya.Atmosphere()
+    #scene.atmosphere.ambient = (0.0, 1.0, 1.0, 1.0)
+
+    camera = MovableCamera(scene)
+    camera.set_xyz(-10.0, 4.0, 10.0)
+    camera.fov = 140.0
+    soya.set_root_widget(camera)
     cubes = {}
     ml = MainLoop(scene)
     while not STOP:
