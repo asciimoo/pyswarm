@@ -3,7 +3,7 @@ from time import sleep
 
 PAUSE = False
 STOP  = False
-FPS   = 10
+FPS   = 10.0
 
 class MovableCamera(soya.Camera):
     def __init__(self, parent):
@@ -67,6 +67,24 @@ def read_swarms():
         swarms[s[0]] = {'coords': map(float, s[1:4]), 'color': s[4]}
     return swarms
 
+def argparser():
+    import argparse
+    from sys import stdin
+    argp = argparse.ArgumentParser(description='exrex - regular expression string generator')
+    argp.add_argument('-i', '--input'
+                     ,help      = 'Output file - default is STDIN'
+                     ,metavar   = 'FILE'
+                     ,default   = stdin
+                     ,type      = argparse.FileType('w')
+                     )
+    argp.add_argument('-f', '--fps'
+                     ,help      = 'Reading speed - default is 10'
+                     ,default   = 10.0
+                     ,action    = 'store'
+                     ,type      = float
+                     ,metavar   = 'N'
+                     )
+    return vars(argp.parse_args())
 
 soya.init(fullscreen=True)
 soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
@@ -91,17 +109,22 @@ class MainLoop(soya.MainLoop):
     def begin_round(self):
         soya.MainLoop.begin_round(self)
 
-cubes = {}
-ml = MainLoop(scene)
-while not STOP:
-    if not PAUSE:
-        swarms = read_swarms()
-        for name,swarm in swarms.items():
-            if not name in cubes.keys():
-                color = soya.Material()
-                color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
-                cube = soya.cube.Cube(None, color, size=0.08).shapify()
-                cubes[name] = SwarmEntity(scene,cube)
-            cubes[name].set_xyz(*swarms[name]['coords'])
-        sleep(1/float(FPS))
-    ml.update()
+
+if __name__ == '__main__':
+    args = argparser()
+    FPS = args['fps']
+    cubes = {}
+    ml = MainLoop(scene)
+    while not STOP:
+        if not PAUSE:
+            swarms = read_swarms()
+            for name,swarm in swarms.items():
+                if not name in cubes.keys():
+                    color = soya.Material()
+                    color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
+                    cube = soya.cube.Cube(None, color, size=0.08).shapify()
+                    cubes[name] = SwarmEntity(scene,cube)
+                cubes[name].set_xyz(*swarms[name]['coords'])
+            if FPS > 0:
+                sleep(1/FPS)
+        ml.update()
