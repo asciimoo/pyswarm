@@ -1,6 +1,4 @@
 import sys, os, os.path, soya, soya.cube
-from time import sleep
-from soya import opengl
 from threading import Thread
 
 PAUSE = False
@@ -95,7 +93,7 @@ class Reader(Thread):
 def argparser():
     import argparse
     from sys import stdin
-    argp = argparse.ArgumentParser(description='exrex - regular expression string generator')
+    argp = argparse.ArgumentParser(description='PyswarmViewer')
     argp.add_argument('-i', '--input'
                      ,help      = 'Output file - default is STDIN'
                      ,metavar   = 'FILE'
