@@ -49,20 +49,18 @@ class MovableCamera(soya.Camera):
 class SwarmEntity(soya.Body):
     def __init__(self, scene, model):
         soya.Body.__init__(self, scene, model)
-        self.new_pos = (0.0, 0.0, 0.0)
-        self.speed = soya.Vector(self, 0.0, 0.0, 0.0)
-
-    def newpos(self, x, y, z):
-        self.new_pos = soya.Point()
-        self.new_pos.set_xyz(x, y, z)
+        self.state1 = soya.CoordSystState(self)
+        self.state2 = soya.CoordSystState(self)
+        self.factor = 0.0
 
     def begin_round(self):
-        soya.Body.begin_round(self)
-        self.speed = self.vector_to(self.new_pos)
+        self.factor = 0.0
+        self.state1 = self.state2
+        self.state2 = soya.CoordSystState(self)
 
     def advance_time(self, prop):
-        soya.Body.advance_time(self, prop)
-        self.add_mul_vector(prop, self.speed)
+        self.factor += prop
+        self.interpolate(self.state1, self.state2, self.factor)
 
 
 class Reader(Thread):
@@ -138,12 +136,9 @@ class MainLoop(soya.MainLoop):
                     color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
                     cube = soya.cube.Cube(None, color, size=0.08).shapify()
                     self.cubes[name] = SwarmEntity(scene,cube)
-                self.cubes[name].newpos(*swarm['coords'])
-            # TODO remove cubes
-            #for cname,cube in self.cubes.items():
-            #    if not cname in swarms.keys():
-            #        s = self.cubes.pop(cname)
-            #        del(s)
+                p = soya.Point(scene)
+                p.set_xyz(*swarm['coords'])
+                self.cubes[name].state2.move(p)
 
 
 if __name__ == '__main__':
