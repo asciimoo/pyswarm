@@ -4,6 +4,7 @@ import random
 from math import sqrt
 
 class Agent:
+
     count = 0
 
     def __init__(self, name='Bond', resolution=1, x=None, y=None, z=None, color="FFFFFFFF", **kwargs):
@@ -41,7 +42,11 @@ class World:
         self.agents = []
 
     def add(self, *args):
-        self.agents.extend(args)
+        for agent in args:
+            if not hasattr(self, agent.type):
+                setattr(self, agent.type, [])
+            getattr(self, agent.type).append(agent)
+            self.agents.append(agent)
 
     def genNext(self):
         for agent in self.agents:
