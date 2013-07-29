@@ -157,6 +157,8 @@ if __name__ == '__main__':
     light = soya.Light(scene)
     light.set_xyz(10.0, 10.2, 11.0)
 
+    soya.cursor_set_visible(0)
+
     #scene.atmosphere = soya.Atmosphere()
     #scene.atmosphere.ambient = (0.0, 1.0, 1.0, 1.0)
 
