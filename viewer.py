@@ -89,6 +89,13 @@ def argparser():
                      ,help      = 'Fullscreen mode'
                      ,default   = False
                      )
+    argp.add_argument('-r', '--resolution'
+                     ,help      = 'Resolution - default 800x600'
+                     ,default   = '800x600'
+                     ,action    = 'store'
+                     ,type      = str
+                     ,metavar   = 'WIDTHxHEIGHT'
+                     )
     return vars(argp.parse_args())
 
 
@@ -100,8 +107,9 @@ class MainLoop(soya.MainLoop):
 
 if __name__ == '__main__':
     args = argparser()
+    args['resolution'] = map(int, args['resolution'].split('x'))
     FPS = args['fps']
-    soya.init(title='SwarmViewer', fullscreen=args['full_screen'])
+    soya.init(title='SwarmViewer', fullscreen=args['full_screen'], width=args['resolution'][0], height=args['resolution'][1])
     soya.path.append(os.path.join(os.path.dirname(sys.argv[0]), "data"))
 
     # Creates the scene.
