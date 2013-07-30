@@ -83,7 +83,7 @@ class Zones():
         x = round(agent.x, self.precision[0])
         y = round(agent.y, self.precision[1])
         z = round(agent.z, self.precision[2])
-        # TODO garbage collection? - empty lists
+        # TODO garbage collection - empty lists/dicts
         if not self.zones.get(x):
             return
         if not self.zones[x].get(y):
@@ -111,6 +111,7 @@ class World:
 
     def genNext(self):
         for agent in self.agents:
+            # TODO zones optimization - skip non moving acts
             self.zones.remove(agent)
             agent.act()
             self.zones.add(agent)
