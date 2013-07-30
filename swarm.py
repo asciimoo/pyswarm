@@ -3,6 +3,21 @@
 import random
 from math import sqrt
 
+def _parse_coords(coords):
+    if type(coords) == list:
+        x = coords[0]
+        y = coords[1]
+        z = coords[2]
+    elif type(coords) == dict:
+        x = coords['x']
+        y = coords['y']
+        z = coords['z']
+    else:
+        x = coords.x
+        y = coords.y
+        z = coords.z
+    return x, y, z
+
 class Agent:
 
     count = 0
@@ -23,8 +38,11 @@ class Agent:
     def act(self):
         pass
 
+
+
     def distance(self, bgent):
-        return sqrt(pow(self.x-bgent.x, 2)+pow(self.y-bgent.y, 2)+pow(self.z-bgent.z, 2))
+        x, y, z = _parse_coords(bgent)
+        return sqrt(pow(self.x-x, 2)+pow(self.y-y, 2)+pow(self.z-z, 2))
 
     def move_to(self, x, y, z):
         self.x = x
@@ -33,8 +51,9 @@ class Agent:
         return self
 
     def vector_to(self, bgent, d=-1):
+        x, y, z = _parse_coords(bgent)
         d = float(d)
-        return [(self.x-bgent.x)/d, (self.y-bgent.y)/d, (self.z-bgent.z)/d]
+        return [(self.x-x)/d, (self.y-y)/d, (self.z-z)/d]
 
     def move(self, x, y, z):
         self.x += x
