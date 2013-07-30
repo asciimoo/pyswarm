@@ -1,2 +1,4 @@
-*.swp
-*.pyc
+*.swarms
+swarms/*.swarms
+*.swarm
+swarms/*.swarm
