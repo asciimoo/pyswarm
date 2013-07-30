@@ -61,10 +61,45 @@ class Agent:
         self.z += z
         return self
 
+class Zones():
+    def __init__(self, precision=(2,2,2)):
+        self.precision = precision
+        self.zones = { }
+
+    def add(self, agent):
+        x = round(agent.x, self.precision[0])
+        y = round(agent.y, self.precision[1])
+        z = round(agent.z, self.precision[2])
+        if self.zones.get(x) == None:
+            self.zones[x] = {}
+        if self.zones[x].get(y) == None:
+            self.zones[x][y] = {}
+        if self.zones[x][y].get(z) == None:
+            self.zones[x][y][z] = [agent]
+        else:
+            self.zones[x][y][z].append(agent)
+
+    def remove(self, agent):
+        x = round(agent.x, self.precision[0])
+        y = round(agent.y, self.precision[1])
+        z = round(agent.z, self.precision[2])
+        # TODO garbage collection? - empty lists
+        if not self.zones.get(x):
+            return
+        if not self.zones[x].get(y):
+            return
+        if not self.zones[x][y].get(z):
+            return
+        if not agent in self.zones[x][y][z]:
+            return
+        self.zones[x][y][z].remove(agent)
+
+
 class World:
 
-    def __init__(self):
+    def __init__(self, zone_precision=(2,2,2)):
         self.agents = []
+        self.zones = Zones(precision=zone_precision)
 
     def add(self, *args):
         for agent in args:
@@ -72,10 +107,13 @@ class World:
                 setattr(self, agent.type, [])
             getattr(self, agent.type).append(agent)
             self.agents.append(agent)
+            self.zones.add(agent)
 
     def genNext(self):
         for agent in self.agents:
+            self.zones.remove(agent)
             agent.act()
+            self.zones.add(agent)
         return self
 
     def __repr__(self):
