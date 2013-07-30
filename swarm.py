@@ -61,6 +61,15 @@ class Agent:
         self.z += z
         return self
 
+    def identity_vector(self, vectors):
+        iv = [0, 0, 0]
+        iv_len = len(vectors)
+        for x,y,z in vectors:
+            iv[0] += x
+            iv[1] += y
+            iv[2] += z
+        return iv[0]/iv_len, iv[1]/iv_len, iv[2]/iv_len
+
 def round_coords(agent, prec_x=2, prec_y=2, prec_z=2):
     return round(agent.x, prec_x), round(agent.y, prec_y), round(agent.z, prec_z)
 
