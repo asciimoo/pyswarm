@@ -2,7 +2,7 @@
 
 from swarm import Agent, World
 
-class RandomFollow(Agent):
+class Spherical(Agent):
 
     def init(self, world):
         self.rounds = 0.0
@@ -28,7 +28,7 @@ class RandomFollow(Agent):
 
 if __name__ == '__main__':
     world = World()
-    [world.add(RandomFollow(world=world)) for x in range(1000)]
+    [world.add(Spherical(world=world)) for x in range(1000)]
     print world
     for i in range(1000):
         print world.genNext()
