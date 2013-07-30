@@ -61,15 +61,16 @@ class Agent:
         self.z += z
         return self
 
+def round_coords(agent, prec_x=2, prec_y=2, prec_z=2):
+    return round(agent.x, prec_x), round(agent.y, prec_y), round(agent.z, prec_z)
+
 class Zones():
-    def __init__(self, precision=(2,2,2)):
-        self.precision = precision
+    def __init__(self, precisions=(2,2,2)):
+        self.precisions = precisions
         self.zones = { }
 
     def add(self, agent):
-        x = round(agent.x, self.precision[0])
-        y = round(agent.y, self.precision[1])
-        z = round(agent.z, self.precision[2])
+        x, y, z = round_coords(agent, *self.precisions)
         if self.zones.get(x) == None:
             self.zones[x] = {}
         if self.zones[x].get(y) == None:
@@ -80,9 +81,7 @@ class Zones():
             self.zones[x][y][z].append(agent)
 
     def remove(self, agent):
-        x = round(agent.x, self.precision[0])
-        y = round(agent.y, self.precision[1])
-        z = round(agent.z, self.precision[2])
+        x, y, z = round_coords(agent, *self.precisions)
         # TODO garbage collection - empty lists/dicts
         if not self.zones.get(x):
             return
@@ -94,12 +93,22 @@ class Zones():
             return
         self.zones[x][y][z].remove(agent)
 
+    def get_nearby(self, agent):
+        x, y, z = round_coords(agent, *self.precisions)
+        if not self.zones.get(x):
+            return []
+        if not self.zones[x].get(y):
+            return []
+        if not self.zones[x][y].get(z):
+            return []
+        return self.zones[x][y][z]
+
 
 class World:
 
-    def __init__(self, zone_precision=(2,2,2)):
+    def __init__(self, zone_precisions=(2,2,2)):
         self.agents = []
-        self.zones = Zones(precision=zone_precision)
+        self.zones = Zones(precisions=zone_precisions)
 
     def add(self, *args):
         for agent in args:
