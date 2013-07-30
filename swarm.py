@@ -61,7 +61,7 @@ class Agent:
         self.z += z
         return self
 
-    def identity_vector(self, vectors):
+    def merge_vectors(self, vectors):
         iv = [0, 0, 0]
         iv_len = len(vectors)
         for x,y,z in vectors:
