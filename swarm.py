@@ -76,7 +76,7 @@ class Zones():
             self.zones[x][y] = {}
         if self.zones[x][y].get(z) == None:
             self.zones[x][y][z] = [agent]
-        else:
+        elif agent not in self.zones[x][y][z]:
             self.zones[x][y][z].append(agent)
 
     def remove(self, agent):
