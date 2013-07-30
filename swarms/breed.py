@@ -23,7 +23,7 @@ class RandomMoving(Agent):
             if dist < 5 and dist > 1 and not move:
                 move = [x/15 for x in self.vector_to(agent)]
         if self.cooldown == 0:
-            if c > 2 and c < 50 and len(world.agents) < 1000:
+            if c > 2 and c < 20 and len(world.agents) < 1000:
                 world.add(RandomMoving(color='FF0000FF', world=self.world))
             self.cooldown = 10
         else:
