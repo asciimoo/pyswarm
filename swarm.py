@@ -74,6 +74,7 @@ def round_coords(agent, prec_x=2, prec_y=2, prec_z=2):
     return round(agent.x, prec_x), round(agent.y, prec_y), round(agent.z, prec_z)
 
 class Zones():
+
     def __init__(self, precisions=(2,2,2)):
         self.precisions = precisions
         self.zones = { }
@@ -102,8 +103,7 @@ class Zones():
             return
         self.zones[x][y][z].remove(agent)
 
-    def get_nearby(self, agent):
-        x, y, z = round_coords(agent, *self.precisions)
+    def get_xyz(self, x, y, z):
         if not self.zones.get(x):
             return []
         if not self.zones[x].get(y):
@@ -111,6 +111,13 @@ class Zones():
         if not self.zones[x][y].get(z):
             return []
         return self.zones[x][y][z]
+
+    def get_nearby(self, agent, distance=0):
+        x, y, z = round_coords(agent, *self.precisions)
+        agents = set()
+        for agent in self.get_xyz(x, y, z):
+            agents.add(agent)
+        return list(agents)
 
 
 class World:
