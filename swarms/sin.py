@@ -11,13 +11,13 @@ class SinAgent(Agent):
 
 
     def act(self):
-        self.x += sin(self.rounds)
+        self.x += sin(self.rounds+int(self.name.split('_')[1]))
         self.y -= sin(self.rounds)
         self.rounds += .1
 
 if __name__ == '__main__':
     world = World()
-    [world.add(SinAgent()) for x in range(100)]
+    [world.add(SinAgent()) for x in range(1000)]
     print world
     for i in range(1000):
         print world.genNext()
