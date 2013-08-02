@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from swarm import Agent, World
+from swarm import Agent, World, merge_vectors
 
 class Cubic(Agent):
 
@@ -20,7 +20,7 @@ class Cubic(Agent):
                 vectors.append(self.vector_to(agent, 1))
         dist = self.distance([0.5, 0.5, 0.5])
         if len(vectors):
-            self.move(*[x/15 for x in self.merge_vectors(vectors)])
+            self.move(*[x/15 for x in merge_vectors(vectors)])
         else:
             new_coords = [x/(dist*5) for x in self.vector_to([0.5, 0.5, 0.5])]
             self.move(*new_coords)
@@ -47,7 +47,7 @@ class Spheric(Agent):
                 vectors.append(self.vector_to(agent, -1))
         dist = self.distance([2.5, -0.5, 1.5])
         if len(vectors):
-            self.move(*[x/15 for x in self.merge_vectors(vectors)])
+            self.move(*[x/15 for x in merge_vectors(vectors)])
         else:
             new_coords = [x/(dist*5) for x in self.vector_to([2.5, -0.5, 1.5])]
             self.move(*new_coords)
