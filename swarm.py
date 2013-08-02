@@ -21,6 +21,15 @@ def _parse_coords(coords):
 def round_coords(agent, prec_x=2, prec_y=2, prec_z=2):
     return round(agent.x, prec_x), round(agent.y, prec_y), round(agent.z, prec_z)
 
+def merge_vectors(vectors):
+    iv = [0, 0, 0]
+    iv_len = len(vectors)
+    for x,y,z in vectors:
+        iv[0] += x
+        iv[1] += y
+        iv[2] += z
+    return iv[0]/iv_len, iv[1]/iv_len, iv[2]/iv_len
+
 class Agent:
 
     count = 0
@@ -61,15 +70,6 @@ class Agent:
         self.y += y
         self.z += z
         return self
-
-    def merge_vectors(self, vectors):
-        iv = [0, 0, 0]
-        iv_len = len(vectors)
-        for x,y,z in vectors:
-            iv[0] += x
-            iv[1] += y
-            iv[2] += z
-        return iv[0]/iv_len, iv[1]/iv_len, iv[2]/iv_len
 
 class Zones():
 
