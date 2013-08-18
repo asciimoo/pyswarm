@@ -133,6 +133,8 @@ class MainLoop(soya.MainLoop):
             sys.exit()
         if not PAUSE:
             swarms = reader.get_round()
+            if not len(swarms):
+                return
             cube_keys = self.cubes.keys()
             for name,swarm in swarms.items():
                 if not name in self.cubes.keys():
