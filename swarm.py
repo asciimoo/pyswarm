@@ -143,6 +143,10 @@ class World:
             self.agents.append(agent)
             self.zones.add(agent)
 
+    def remove(self, agent):
+        self.agents.remove(agent)
+        self.zones.remove(agent)
+
     def genNext(self):
         for agent in self.agents:
             # TODO zones optimization - skip non moving acts
