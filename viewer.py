@@ -133,15 +133,20 @@ class MainLoop(soya.MainLoop):
             sys.exit()
         if not PAUSE:
             swarms = reader.get_round()
+            cube_keys = self.cubes.keys()
             for name,swarm in swarms.items():
                 if not name in self.cubes.keys():
                     color = soya.Material()
                     color.diffuse = [int(swarm['color'][x:x+2], 16)/255.0 for x in range(0, len(swarm['color']), 2)]
                     cube = soya.cube.Cube(None, color, size=0.08).shapify()
                     self.cubes[name] = SwarmEntity(scene,cube)
+                else:
+                    cube_keys.remove(name)
                 p = soya.Point(scene)
                 p.set_xyz(*swarm['coords'])
                 self.cubes[name].state2.move(p)
+            for swarm in cube_keys:
+                scene.remove(self.cubes.pop(swarm))
 
 
 if __name__ == '__main__':

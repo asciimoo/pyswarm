@@ -122,9 +122,9 @@ class Zones():
                 if y_offset == 0:
                     continue
                 for z_offset in range(-distance, distance, 1):
-                    for agent in self.get_xyz(agent.x+distance*pow(10, -self.precisions[0])
-                                             ,agent.y+distance*pow(10, -self.precisions[1])
-                                             ,agent.z+distance*pow(10, -self.precisions[2])):
+                    for agent in self.get_xyz(agent.x+x_offset*pow(10, -self.precisions[0])
+                                             ,agent.y+y_offset*pow(10, -self.precisions[1])
+                                             ,agent.z+z_offset*pow(10, -self.precisions[2])):
                         agents.append(agent)
         return list(agents)
 
