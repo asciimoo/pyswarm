@@ -126,6 +126,11 @@ def argparser():
 # Main loop
 class MainLoop(soya.MainLoop):
     cubes = {}
+
+    def __init__(self, scene):
+        soya.MainLoop.__init__(self, scene)
+        self.round_duration = 1.0 / FPS
+
     def begin_round(self):
         soya.MainLoop.begin_round(self)
         if STOP:
